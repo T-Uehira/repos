@@ -1,0 +1,44 @@
+<!doctype html>
+<html ng-app="myApp">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.min.js"></script>
+<script src="ngStorage-master/ngStorage.min.js"></script>
+</head>
+<body>
+
+
+
+  <div ng-controller="sample">
+    <p>Name:<input type="text" ng-model="in_name"></p>
+    <p>Description:<input type="text" ng-model="in_desc"></p>
+    <p><button ng-click="add_calc(in_name,in_desc)">Save</button></p>
+
+
+    <p>Search:<input type="text" ng-model="search_val"></p>
+    <div ng-repeat="i in $storage.storage | filter:{'name':search_val}">
+      {{i.name}} {{i.disp}}
+    </div>
+<!--    <p><input type="text" ng-model="$storage.title"></p>
+    {{$storage.title}}
+-->
+  </div>
+
+<script>
+var app = angular.module('myApp', ['ngStorage']);
+app.controller('sample', ['$scope', '$localStorage', function ($scope, $localStorage) {
+  // 取り出し。デフォルトの値を設定できる。
+  $scope.$storage = $localStorage.$default({
+    "storage":[]
+  });
+  console.log($scope.$storage);
+
+  $scope.add_calc = function(name,disp) {
+    $scope.$storage.storage.push({"name":name,"disp":disp});
+  };
+
+  //$scope.$storage = []; // これで勝手に保存してくれる
+}]);
+</script>
+</body>
+</html>
