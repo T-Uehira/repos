@@ -1,0 +1,61 @@
+<!doctype html>
+<html ng-app="myApp">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js?ver=4.6.1"></script>
+</head>
+<body ng-controller="ctrl">
+
+{{message}}
+
+
+<script>
+angular.module('myApp', [])
+.service('serv',['$http','$q',function($http,$q){
+  var xmldata;
+  var deffered = $q.defer();
+  var service = {
+    getapi: function(param_f,param_t,param_c){
+      var parameter = {
+        f:param_f,
+        t:param_t,
+        c:param_c
+      };
+      $http.get("getxml.php",{params:parameter}).success(function(data){
+        console.log("success");
+        xmldata = data;
+        deffered.resolve();
+      })
+      return deffered.promise;
+    },
+    viewapi: function(){
+      return xmldata;
+    }
+  };
+  return service;
+}])
+
+
+.controller('ctrl', function($scope, serv) {
+  var start = '渋谷';
+  //端同士(ここでは下関と八戸北)までのそれぞれの料金を調べる
+  //10k円でたどり着かない場合は最も料金の低いルートのものを調べ続ける
+  $nouth = "";
+  serv.getapi('渋谷','八戸北','普通車').then(function(){
+    console.log(serv.viewapi());
+    $p_xml = $.parseXML(serv.viewapi());
+    $nouth = $($p_xml);
+
+    console.log($nouth.find("TotalToll"));
+  });
+
+
+
+
+
+
+});
+</script>
+</body>
+</html>
